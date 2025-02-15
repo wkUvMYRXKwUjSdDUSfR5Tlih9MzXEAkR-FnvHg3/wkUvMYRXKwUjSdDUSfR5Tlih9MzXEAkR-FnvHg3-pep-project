@@ -44,13 +44,19 @@ public class SocialMediaController {
 
     private void postAccountHandler(Context ctx) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        Account account = mapper.readValue(ctx.body().toString(), Account.class);
-        Account addedAccount = accountService.addAccount(account);
-        if(addedAccount != null) {
-            ctx.json(mapper.writeValueAsString(addedAccount));
-            ctx.status(200);
-        } else {
-            ctx.status(400);
+        try {
+            Account account = mapper.readValue(ctx.body(), Account.class);
+            Account addedAccount = accountService.addAccount(account);
+            if (addedAccount != null) {
+                ctx.json(mapper.writeValueAsString(addedAccount));
+                ctx.status(200);
+            } else {
+                System.out.println(account.toString());
+                ctx.status(400); 
+            }
+        } catch (JsonProcessingException e) {
+            System.out.println(e.getMessage());
+            ctx.status(400).result("Invalid JSON format");
         }
     }
 }

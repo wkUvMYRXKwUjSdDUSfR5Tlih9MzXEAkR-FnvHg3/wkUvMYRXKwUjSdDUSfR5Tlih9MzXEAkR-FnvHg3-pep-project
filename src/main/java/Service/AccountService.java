@@ -16,8 +16,11 @@ public class AccountService {
 
     public Account addAccount(Account account) {
         Account checkedAccount = accountDAO.getAccountByUsername(account.getUsername());
+        System.out.println("addAccount checkedAccount " + checkedAccount);
         if(checkedAccount == null && account.getPassword().length() >= 4 && account.getUsername().length() > 0) {
-            return accountDAO.insertAccount(account);
+            Account addedAccount = accountDAO.insertAccount(account);
+            System.out.println("addAccount addedAccount " + addedAccount);
+            return addedAccount;
         }
         return null;
     }
