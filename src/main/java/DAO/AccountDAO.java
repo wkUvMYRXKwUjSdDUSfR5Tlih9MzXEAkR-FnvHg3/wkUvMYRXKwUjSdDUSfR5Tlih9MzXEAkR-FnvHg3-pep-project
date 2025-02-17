@@ -21,15 +21,11 @@ public class AccountDAO {
                 account.setUsername(rs.getString("username"));
                 account.setPassword(rs.getString("password"));
                 return account;
-            } else {
-                return null;
-            }
-            
+            } 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return null;
         }
-        //return null;
+        return null;
     }
 
     public Account insertAccount(Account account) {
@@ -41,19 +37,12 @@ public class AccountDAO {
             ps.setString(1, account.getUsername());
             ps.setString(2, account.getPassword());
 
-            int rows = ps.executeUpdate();
-            System.out.println("rows effected " + rows);
-
-            try {
-                ResultSet gk = ps.getGeneratedKeys();
-                account.setAccount_id(gk.getInt(1));
-            } catch(Exception e) {
-                System.out.println("gk " + e.getMessage());
+            ps.executeUpdate();
+            ResultSet rs = ps.getGeneratedKeys();
+            if(rs.next()){
+                int pk = (int) rs.getLong(1);
+                return new Account(pk, account.getUsername(), account.getPassword());
             }
-            
-            
-            System.out.println("insertAccount account " + account);
-            return account;
         } catch (SQLException e) {
             System.out.println("insertAccount account " + account);
             System.out.println(e.getMessage());

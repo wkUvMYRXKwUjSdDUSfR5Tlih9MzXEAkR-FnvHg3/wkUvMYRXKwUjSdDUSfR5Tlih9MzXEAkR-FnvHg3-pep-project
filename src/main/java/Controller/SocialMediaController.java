@@ -30,6 +30,7 @@ public class SocialMediaController {
         Javalin app = Javalin.create();
         app.get("example-endpoint", this::exampleHandler);
         app.post("/register", this::postAccountHandler);
+        app.post("/login", this::postAccountLoginHandler);
 
         return app;
     }
@@ -53,6 +54,23 @@ public class SocialMediaController {
             } else {
                 System.out.println(account.toString());
                 ctx.status(400); 
+            }
+        } catch (JsonProcessingException e) {
+            System.out.println(e.getMessage());
+            ctx.status(400).result("Invalid JSON format");
+        }
+    }
+
+    private void postAccountLoginHandler(Context ctx) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            Account account = mapper.readValue(ctx.body(), Account.class);
+            Account loginAccount = accountService.accountLogin(account);
+            if (loginAccount != null) {
+                ctx.json(mapper.writeValueAsString(loginAccount));
+                ctx.status(200);
+            } else {
+                ctx.status(401); 
             }
         } catch (JsonProcessingException e) {
             System.out.println(e.getMessage());
