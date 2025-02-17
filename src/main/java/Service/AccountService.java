@@ -33,4 +33,8 @@ public class AccountService {
         }
         return null;
     }
+
+    public Account geAccount(int accountId) {
+        return accountDAO.getAccountByAccountID(accountId);
+    }
 }
