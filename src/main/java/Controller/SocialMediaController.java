@@ -44,6 +44,7 @@ public class SocialMediaController {
         app.get("/messages/{message_id}", this::getMessageByIdHandler);
         app.delete("/messages/{message_id}", this::postDeleteMessageByIdHandler);
         app.patch("/messages/{message_id}", this::patchMessageHandler);
+        app.get("/accounts/{account_id}/messages", this::getMessagesByAccountIdHandler);
 
         return app;
     }
@@ -151,7 +152,7 @@ public class SocialMediaController {
             Message message = mapper.readValue(ctx.body(), Message.class);
             int messageId = Integer.parseInt(strMessageId);
             message.setMessage_id(messageId);
-            
+
             Message updatedMessage = messageService.updateMessage(message);
             if (updatedMessage != null) {
                 ctx.json(mapper.writeValueAsString(updatedMessage));
@@ -162,6 +163,18 @@ public class SocialMediaController {
         } catch (Exception e) {
             System.out.println(e.getMessage());
             ctx.status(400).result("Invalid JSON format");
+        }
+    }
+
+    private void getMessagesByAccountIdHandler(Context ctx) {
+        String strAccountId = ctx.pathParam("account_id");
+        try {
+            int accountId = Integer.parseInt(strAccountId);
+            List<Message> messages = messageService.getMessagesByAccountId(accountId);
+            ctx.json(messages);
+            ctx.status(200);
+        } catch(Exception e) {
+            ctx.status(400);
         }
     }
 }

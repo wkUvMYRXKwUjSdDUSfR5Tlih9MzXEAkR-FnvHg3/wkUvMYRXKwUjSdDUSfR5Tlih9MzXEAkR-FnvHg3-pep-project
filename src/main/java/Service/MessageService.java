@@ -51,11 +51,15 @@ public class MessageService {
     public Message updateMessage(Message message) {
         Message oldMessage = getMessageById(message.getMessage_id());
         String text = message.getMessage_text();
-        
+
         if(oldMessage != null && !text.isBlank() && text.length() <= 255) {
             messageDAO.updateMessage(message);
             return getMessageById(message.getMessage_id());
         }
         return null;
+    }
+
+    public List<Message> getMessagesByAccountId(int accountId) {
+        return messageDAO.getMessagesByAccountId(accountId);
     }
 }
