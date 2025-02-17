@@ -3,6 +3,8 @@ package Controller;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 
+import java.util.List;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -36,6 +38,7 @@ public class SocialMediaController {
         app.post("/register", this::postAccountHandler);
         app.post("/login", this::postAccountLoginHandler);
         app.post("/messages", this::postMessageHandler);
+        app.get("/messages", this::getMessageHandler);
 
         return app;
     }
@@ -98,5 +101,11 @@ public class SocialMediaController {
             System.out.println(e.getMessage());
             ctx.status(400).result("Invalid JSON format");
         }
+    }
+
+    private void getMessageHandler(Context ctx) throws JsonProcessingException {
+        List<Message> messages = messageService.getMessages();
+        ctx.json(messages);
+        ctx.status(200);
     }
 }
