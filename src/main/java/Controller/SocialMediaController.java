@@ -35,12 +35,15 @@ public class SocialMediaController {
     public Javalin startAPI() {
         Javalin app = Javalin.create();
         app.get("example-endpoint", this::exampleHandler);
+
         app.post("/register", this::postAccountHandler);
         app.post("/login", this::postAccountLoginHandler);
+
         app.post("/messages", this::postMessageHandler);
         app.get("/messages", this::getAllMessageHandler);
         app.get("/messages/{message_id}", this::getMessageByIdHandler);
         app.delete("/messages/{message_id}", this::postDeleteMessageByIdHandler);
+        app.patch("/messages/{message_id}", this::patchMessageHandler);
 
         return app;
     }
@@ -138,6 +141,27 @@ public class SocialMediaController {
             ctx.status(200);
         } catch(Exception e) {
             ctx.status(400);
+        }
+    }
+
+    private void patchMessageHandler(Context ctx) {
+        ObjectMapper mapper = new ObjectMapper();
+        String strMessageId = ctx.pathParam("message_id");
+        try {
+            Message message = mapper.readValue(ctx.body(), Message.class);
+            int messageId = Integer.parseInt(strMessageId);
+            message.setMessage_id(messageId);
+            
+            Message updatedMessage = messageService.updateMessage(message);
+            if (updatedMessage != null) {
+                ctx.json(mapper.writeValueAsString(updatedMessage));
+                ctx.status(200);
+            } else {
+                ctx.status(400); 
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            ctx.status(400).result("Invalid JSON format");
         }
     }
 }
